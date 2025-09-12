@@ -3,6 +3,7 @@ package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.wistefan.dcql.DCQLEvaluator;
+import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
 import io.github.wistefan.dcql.model.DcqlQuery;
@@ -15,8 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DcqlQueryComplexTest extends DcqlTest {
 
@@ -129,9 +129,9 @@ class DcqlQueryComplexTest extends DcqlTest {
 	void failsWithNoCredentials() throws JsonProcessingException {
 
 		var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of());
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of());
 
-		assertEquals(0, credentialsResult.size());
+		assertFalse(queryResult.success());
 	}
 
 	@Test
@@ -139,18 +139,19 @@ class DcqlQueryComplexTest extends DcqlTest {
 	void failsWithCredentialsThatDoNotSatisfyARequiredClaimSet() throws JsonProcessingException {
 
 		var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MDL_ADDRESS, MDOC_PHOTO_CARD_ADDRESS));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MDL_ADDRESS, MDOC_PHOTO_CARD_ADDRESS));
 
-		assertEquals(0, credentialsResult.size());
+		assertFalse(queryResult.success());
 	}
 
 	@Test
-	@DisplayName("succeeds if all credentials are present")
-	void succeedsIfAllCredentialsArePresent() throws JsonProcessingException {
-		List<Credential> expectedCredentials = List.of(MDOC_MDL_ID, MDOC_MDL_ADDRESS, MDOC_PHOTO_CARD_ID, MDOC_PHOTO_CARD_ADDRESS);
+	@DisplayName("return the requested sets")
+	void succeedsWithRequestedSets() throws JsonProcessingException {
+		List<Credential> expectedIdCredentials = List.of(MDOC_MDL_ID);
+		List<Credential> expectedPoaCredentials = List.of(MDOC_MDL_ADDRESS);
 
 		var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(
 				MDOC_MDL_ID,
 				MDOC_MDL_ADDRESS,
 				MDOC_PHOTO_CARD_ID,
@@ -158,11 +159,50 @@ class DcqlQueryComplexTest extends DcqlTest {
 				MDOC_EXAMPLE,
 				SD_JWT_VC_EXAMPLE));
 
-		assertEquals(4, credentialsResult.size(), "Only the MDoc Credentials of th reight type should be included.");
+		assertTrue(queryResult.success());
+		assertTrue(queryResult.credentials().containsKey("Identification"));
+		assertTrue(queryResult.credentials().containsKey("Proof of address"));
 
-		expectedCredentials.forEach(
-				ec -> assertTrue(credentialsResult.contains(ec))
-		);
+		List<Credential> identification = queryResult.credentials().get("Identification");
+		List<Credential> poa = queryResult.credentials().get("Proof of address");
+
+		assertEquals(1, identification.size());
+		assertEquals(1, poa.size());
+
+		expectedIdCredentials.forEach(
+				ec -> assertTrue(identification.contains(ec)));
+		expectedPoaCredentials.forEach(
+				ec -> assertTrue(poa.contains(ec)));
+	}
+
+	@Test
+	@DisplayName("return alternative if not included")
+	void returnAlternative() throws JsonProcessingException {
+		List<Credential> expectedIdCredentials = List.of(MDOC_PHOTO_CARD_ID);
+		List<Credential> expectedPoaCredentials = List.of(MDOC_MDL_ADDRESS);
+
+		var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(
+				MDOC_MDL_ADDRESS,
+				MDOC_PHOTO_CARD_ID,
+				MDOC_PHOTO_CARD_ADDRESS,
+				MDOC_EXAMPLE,
+				SD_JWT_VC_EXAMPLE));
+
+		assertTrue(queryResult.success());
+		assertTrue(queryResult.credentials().containsKey("Identification"));
+		assertTrue(queryResult.credentials().containsKey("Proof of address"));
+
+		List<Credential> identification = queryResult.credentials().get("Identification");
+		List<Credential> poa = queryResult.credentials().get("Proof of address");
+
+		assertEquals(1, identification.size());
+		assertEquals(1, poa.size());
+
+		expectedIdCredentials.forEach(
+				ec -> assertTrue(identification.contains(ec)));
+		expectedPoaCredentials.forEach(
+				ec -> assertTrue(poa.contains(ec)));
 	}
 
 }

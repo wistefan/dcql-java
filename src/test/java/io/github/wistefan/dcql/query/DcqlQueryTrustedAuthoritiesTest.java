@@ -3,6 +3,7 @@ package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.wistefan.dcql.DCQLEvaluator;
+import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
 import io.github.wistefan.dcql.model.DcqlQuery;
@@ -18,7 +19,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 
@@ -101,9 +102,10 @@ class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 	@DisplayName("mdocMvrc example with trusted_authorities succeeds")
 	void mdocMvrcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
+		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
 
-		assertEquals(1, credentialsResult.size());
+		assertTrue(credentialsResult.success());
+		assertEquals(1, credentialsResult.credentials().get("credentials").size());
 	}
 
 	@Test
@@ -111,9 +113,9 @@ class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 	void mdocMvrcExampleWhereAuthorityDoesNotMatch() throws JsonProcessingException {
 
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_ALT_AKI));
+		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_ALT_AKI));
 
-		assertEquals(0, credentialsResult.size());
+		assertFalse(credentialsResult.success());
 	}
 
 	@Test
@@ -121,9 +123,9 @@ class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 	void mdocMvrcExampleWithNoAuthority() throws JsonProcessingException {
 
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_NO_X5C));
+		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_NO_X5C));
 
-		assertEquals(0, credentialsResult.size());
+		assertFalse(credentialsResult.success());
 	}
 
 	@Test
@@ -131,9 +133,10 @@ class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 	void sdJwtVcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
 
 		var query = OBJECT_MAPPER.readValue(SD_JWT_VC_EXAMPLE_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC));
+		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC));
 
-		assertEquals(1, credentialsResult.size());
+		assertTrue(credentialsResult.success());
+		assertEquals(1, credentialsResult.credentials().get("credentials").size());
 	}
 
 }

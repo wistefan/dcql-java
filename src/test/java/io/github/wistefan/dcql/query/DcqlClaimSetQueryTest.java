@@ -2,6 +2,7 @@ package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.wistefan.dcql.DCQLEvaluator;
+import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
 import io.github.wistefan.dcql.model.DcqlQuery;
@@ -182,10 +183,12 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 	@DisplayName("sd-jwt query get alternative")
 	void sdJwtQueryGetAlternative() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(SD_JWT_QUERY_ALTERNATIVES, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_ADDRESS, SD_JWT_VC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_ADDRESS, SD_JWT_VC_FULL));
 
-		assertEquals(1, credentialsResult.size());
-		if (credentialsResult.get(0).getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
+		if (credential.getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
 			assertEquals(1, sdJwtCredential.getDisclosures().size());
 		} else {
 			fail("Did not get an SdJwt Credential.");
@@ -197,10 +200,12 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 	@DisplayName("sd-jwt query get for name")
 	void sdJwtQueryForName() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(SD_JWT_QUERY_ALTERNATIVES, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_NAME, SD_JWT_VC_ADDRESS, SD_JWT_VC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_NAME, SD_JWT_VC_ADDRESS, SD_JWT_VC_FULL));
 
-		assertEquals(1, credentialsResult.size());
-		if (credentialsResult.get(0).getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
+		if (credential.getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
 			assertEquals(2, sdJwtCredential.getDisclosures().size());
 		} else {
 			fail("Did not get an SdJwt Credential.");
@@ -211,10 +216,12 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 	@DisplayName("sd-jwt query get for street_address within full")
 	void sdJwtQueryForStreetAddressInFull() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(SD_JWT_QUERY_ADDRESS, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_NAME, SD_JWT_VC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_NAME, SD_JWT_VC_FULL));
 
-		assertEquals(1, credentialsResult.size());
-		if (credentialsResult.get(0).getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
+		if (credential.getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
 			assertEquals(1, sdJwtCredential.getDisclosures().size());
 		} else {
 			fail("Did not get an SdJwt Credential.");
@@ -225,11 +232,13 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 	@DisplayName("sd-jwt query get for street_address")
 	void sdJwtQueryForStreetAddress() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(SD_JWT_QUERY_ADDRESS, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_ADDRESS, SD_JWT_VC_NAME, SD_JWT_VC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC_ADDRESS, SD_JWT_VC_NAME, SD_JWT_VC_FULL));
 
-		assertEquals(1, credentialsResult.size());
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
 
-		if (credentialsResult.get(0).getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
+		if (credential.getRawCredential() instanceof SdJwtCredential sdJwtCredential) {
 			assertEquals(1, sdJwtCredential.getDisclosures().size());
 		} else {
 			fail("Did not get an SdJwt Credential.");
@@ -240,39 +249,44 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 	@DisplayName("mdoc mvrc query get full doc")
 	void mdocMvrcQueryFullDocSet() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_FULL, MDOC_MVRC_HOLDER));
-
-		assertEquals(1, credentialsResult.size());
-		assertEquals(credentialsResult.get(0), MDOC_MVRC_FULL);
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_FULL, MDOC_MVRC_HOLDER));
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
+		assertEquals(credential, MDOC_MVRC_FULL);
 	}
 
 	@Test
 	@DisplayName("mdoc mvrc query get second set")
 	void mdocMvrcQuerySecondSet() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER));
 
-		assertEquals(1, credentialsResult.size());
-		assertEquals(credentialsResult.get(0), MDOC_MVRC_HOLDER);
+		assertTrue(queryResult.success());
+		assertEquals(1, queryResult.credentials().get("credentials").size());
+		Credential credential = queryResult.credentials().get("credentials").get(0);
+		assertEquals(credential, MDOC_MVRC_HOLDER);
 	}
 
 	@Test
 	@DisplayName("mdoc mvrc query gets the fullfilling credentials.")
 	void mdocMvrcQueryOnlyOne() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER, MDOC_MVRC_NAME, MDOC_MVRC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER, MDOC_MVRC_NAME, MDOC_MVRC_FULL));
 
-		assertEquals(2, credentialsResult.size());
-		assertTrue(credentialsResult.contains(MDOC_MVRC_NAME));
-		assertTrue(credentialsResult.contains(MDOC_MVRC_FULL));
+		assertTrue(queryResult.success());
+		assertEquals(2, queryResult.credentials().get("credentials").size());
+		List<Credential> credentials = queryResult.credentials().get("credentials");
+		assertTrue(credentials.contains(MDOC_MVRC_NAME));
+		assertTrue(credentials.contains(MDOC_MVRC_FULL));
 	}
 
 	@Test
 	@DisplayName("mdoc mvrc query fails when multiple credentials match, but multiple is not allowed.")
 	void mdocMvrcQueryFailedMultiple() throws JsonProcessingException {
 		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY_SINGLE, DcqlQuery.class);
-		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER, MDOC_MVRC_NAME, MDOC_MVRC_FULL));
+		QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER, MDOC_MVRC_NAME, MDOC_MVRC_FULL));
 
-		assertEquals(0, credentialsResult.size());
+		assertFalse(queryResult.success());
 	}
 }

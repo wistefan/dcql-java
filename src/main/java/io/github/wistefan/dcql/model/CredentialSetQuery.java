@@ -10,7 +10,7 @@ import java.util.List;
  * case with the Verifier.
  */
 @Data
-public class CredentialSetQuery{
+public class CredentialSetQuery {
 
 	/**
 	 * A non-empty array, where each value in the array is a list of Credential Query identifiers representing one set
@@ -24,4 +24,12 @@ public class CredentialSetQuery{
 	 * Verifier.
 	 */
 	private Boolean required = true;
+
+	/**
+	 * A string, number or object specifying the purpose of the query. This specification does not define a specific
+	 * structure or specific values for this property. The purpose is intended to be used by the Verifier to communicate
+	 * the reason for the query to the Wallet. The Wallet MAY use this information to show the user the reason for the
+	 * request.
+	 */
+	private Object purpose;
 }

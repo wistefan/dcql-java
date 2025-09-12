@@ -11,24 +11,65 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DCQLEvaluator {
 
+	private static final String DEFAULT_KEY = "credentials";
 	private static final String MDOC_NAMESPACE_KEY = "namespaces";
 
-	public static List<Credential> evaluateDCQLQuery(DcqlQuery dcqlQuery, List<Credential> credentialsList) {
-		List<Credential> selectedCredentials = new ArrayList<>();
-		for (CredentialQuery cq : dcqlQuery.getCredentials()) {
-			List<Credential> credentialsFullfilling = evaluateCredentialQuery(cq, credentialsList);
-			if (credentialsFullfilling.isEmpty()) {
-				log.debug("When one of the credentials requirements is not fulfilled, the query should fail.");
-				return List.of();
+
+	public static QueryResult evaluateDCQLQuery(DcqlQuery dcqlQuery, List<Credential> credentialsList) {
+		if (containsCredentialSets(dcqlQuery)) {
+			// linked map to contain set order
+			Map<Object, List<Credential>> resultMap = new LinkedHashMap<>();
+			validateIds(dcqlQuery.getCredentials());
+			Map<String, CredentialQuery> credentialQueryMap = new HashMap<>();
+			dcqlQuery.getCredentials()
+					.forEach(cq -> credentialQueryMap.put(cq.getId(), cq));
+			for (CredentialSetQuery credentialSetQuery : dcqlQuery.getCredentialSets()) {
+				List<Credential> credentialsForSet = evaluateCredentialSetQuery(credentialQueryMap, credentialSetQuery, credentialsList);
+				if (credentialsForSet.isEmpty() && credentialSetQuery.getRequired()) {
+					log.debug("The query cannot be fulfilled, since a required set is empty.");
+					return new QueryResult(false, Map.of());
+				}
+				resultMap.put(purposeOrRandom(credentialSetQuery), credentialsForSet);
 			}
-			if (!cq.getMultiple() && credentialsFullfilling.size() != 1) {
-				log.debug("Multiple credentials where returend for a query not allowing multiple.");
-				return List.of();
+			return new QueryResult(true, resultMap);
+		} else {
+			List<Credential> selectedCredentials = new ArrayList<>();
+			for (CredentialQuery cq : dcqlQuery.getCredentials()) {
+				List<Credential> credentialsFullfilling = evaluateCredentialQuery(cq, credentialsList);
+				if (credentialsFullfilling.isEmpty()) {
+					log.debug("When one of the credentials requirements is not fulfilled, the query should fail.");
+					return new QueryResult(false, Map.of());
+				}
+				if (!cq.getMultiple() && credentialsFullfilling.size() != 1) {
+					log.debug("Multiple credentials where returend for a query not allowing multiple.");
+					return new QueryResult(false, Map.of());
+				}
+				selectedCredentials.addAll(credentialsFullfilling);
 			}
-			selectedCredentials.addAll(credentialsFullfilling);
+			// if no sets are requested, put the credentials at one
+			return new QueryResult(true, Map.of("credentials", selectedCredentials));
 		}
 
-		return selectedCredentials;
+	}
+
+	private static List<Credential> evaluateCredentialSetQuery(Map<String, CredentialQuery> credentialQueryMap,
+															   CredentialSetQuery credentialSetQuery,
+															   List<Credential> credentials) {
+		for (List<String> option : credentialSetQuery.getOptions()) {
+			// set to prevent duplicates
+			Set<Credential> fullfillingCredentials = new HashSet<>();
+			fullfillingCredentials.addAll(
+					option.stream()
+							.map(credentialQueryMap::get)
+							.map(cq -> evaluateCredentialQuery(cq, credentials))
+							.flatMap(List::stream)
+							.collect(Collectors.toSet()));
+			// return the first option that fulfills the query
+			if (!fullfillingCredentials.isEmpty()) {
+				return new ArrayList<>(fullfillingCredentials);
+			}
+		}
+		return List.of();
 	}
 
 	private static List<Credential> evaluateCredentialQuery(CredentialQuery credentialQuery, List<Credential> credentialsList) {
@@ -198,14 +239,6 @@ public class DCQLEvaluator {
 		return disclosedCredentials;
 	}
 
-	private static List<SdJwtCredential> evaluateSdJwtCredentialsClaimQuery(ClaimsQuery cq, List<SdJwtCredential> sdJwtCredentials) {
-		return sdJwtCredentials.stream()
-				.map(credential -> ClaimsEvaluator.evaluateClaimsForSdJwtCredential(cq, credential))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.toList();
-	}
-
 	private static List<LdpCredential> evaluateLdpCredentialsClaimQuery(ClaimsQuery cq, List<LdpCredential> ldpCredentials) {
 		return ldpCredentials.stream()
 				.map(credential -> ClaimsEvaluator.evaluateClaimsForLdpCredential(cq, credential))
@@ -303,5 +336,19 @@ public class DCQLEvaluator {
 
 	private static boolean containsTrustAuthorities(CredentialQuery credentialQuery) {
 		return credentialQuery.getTrustedAuthorities() != null && !credentialQuery.getTrustedAuthorities().isEmpty();
+	}
+
+	private static boolean containsCredentialSets(DcqlQuery dcqlQuery) {
+		return dcqlQuery.getCredentialSets() != null && !dcqlQuery.getCredentialSets().isEmpty();
+	}
+
+	private static void validateIds(List<CredentialQuery> credentialQueries) {
+		if (credentialQueries.stream().anyMatch(cq -> cq.getId() == null)) {
+			throw new IllegalArgumentException("All credentialQueries need to contain an id.");
+		}
+	}
+
+	private static Object purposeOrRandom(CredentialSetQuery credentialSetQuery) {
+		return Optional.ofNullable(credentialSetQuery.getPurpose()).orElse(UUID.randomUUID().toString());
 	}
 }
