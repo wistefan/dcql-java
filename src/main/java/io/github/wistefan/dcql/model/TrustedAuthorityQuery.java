@@ -1,7 +1,9 @@
 
 package io.github.wistefan.dcql.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,6 +12,8 @@ import java.util.List;
  * A Credential is identified as a match to a Trusted Authorities Query if it matches with one of the provided values in
  * one of the provided types.
  */
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class TrustedAuthorityQuery {
 
