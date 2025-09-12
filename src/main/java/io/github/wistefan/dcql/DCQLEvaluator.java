@@ -21,8 +21,13 @@ public class DCQLEvaluator {
 				log.debug("When one of the credentials requirements is not fulfilled, the query should fail.");
 				return List.of();
 			}
+			if (!cq.getMultiple() && credentialsFullfilling.size() != 1) {
+				log.debug("Multiple credentials where returend for a query not allowing multiple.");
+				return List.of();
+			}
 			selectedCredentials.addAll(credentialsFullfilling);
 		}
+
 		return selectedCredentials;
 	}
 

@@ -1,7 +1,5 @@
 package io.github.wistefan.dcql.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -21,7 +19,6 @@ public enum CredentialFormat {
 		this.value = value;
 	}
 
-	@JsonCreator
 	public static CredentialFormat fromValue(String value) {
 		return Arrays.stream(values())
 				.filter(eV -> eV.getValue().equals(value))
@@ -29,7 +26,6 @@ public enum CredentialFormat {
 				.orElseThrow(() -> new IllegalArgumentException(String.format("Unknown value %s.", value)));
 	}
 
-	@JsonValue
 	public String getValue() {
 		return value;
 	}

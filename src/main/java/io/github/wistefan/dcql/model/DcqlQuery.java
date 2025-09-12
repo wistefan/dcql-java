@@ -1,7 +1,6 @@
 
 package io.github.wistefan.dcql.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class DcqlQuery {
 	 * A non-empty array of Credential Set Queries that specifies additional constraints on which of the requested
 	 * Credentials to return.
 	 */
-	@JsonProperty("credential_sets")
 	private List<CredentialSetQuery> credentialSets;
 
 }

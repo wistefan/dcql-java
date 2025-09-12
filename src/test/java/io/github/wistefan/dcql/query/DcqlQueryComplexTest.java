@@ -2,8 +2,6 @@
 package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.wistefan.dcql.DCQLEvaluator;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
@@ -11,16 +9,14 @@ import io.github.wistefan.dcql.model.DcqlQuery;
 import io.github.wistefan.dcql.model.credential.JwtCredential;
 import io.github.wistefan.dcql.model.credential.MDocCredential;
 import io.github.wistefan.dcql.model.credential.SdJwtCredential;
-import io.github.wistefan.dcql.result.CredentialSetResult;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DcqlQueryComplexTest extends DcqlTest {
 

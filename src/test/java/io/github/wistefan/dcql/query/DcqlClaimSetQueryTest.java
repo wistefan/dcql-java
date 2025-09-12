@@ -22,6 +22,30 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 			    {
 			      "id": "my_credential",
 			      "format": "mso_mdoc",
+			      "multiple": true,
+			      "meta": { "doctype_value": "org.iso.7367.1.mVRC" },
+			      "claims": [
+			        { "id": "a", "namespace": "org.iso.7367.1", "claim_name": "vehicle_holder" },
+			        { "id": "b", "namespace": "org.iso.18013.5.1", "claim_name": "first_name" },
+			        { "id": "c", "namespace": "org.iso.18013.5.1", "claim_name": "first_name" }
+			      ],
+			      "claim_sets": [
+			      	["b","c"],
+			      	["a"]
+			      ],
+			      "require_cryptographic_holder_binding": false
+			    }
+			  ]
+			}
+			""";
+
+	private static final String MDOC_MVRC_QUERY_SINGLE = """
+			{
+			  "credentials": [
+			    {
+			      "id": "my_credential",
+			      "format": "mso_mdoc",
+			      "multiple": false,
 			      "meta": { "doctype_value": "org.iso.7367.1.mVRC" },
 			      "claims": [
 			        { "id": "a", "namespace": "org.iso.7367.1", "claim_name": "vehicle_holder" },
@@ -241,5 +265,14 @@ public class DcqlClaimSetQueryTest extends DcqlTest {
 		assertEquals(2, credentialsResult.size());
 		assertTrue(credentialsResult.contains(MDOC_MVRC_NAME));
 		assertTrue(credentialsResult.contains(MDOC_MVRC_FULL));
+	}
+
+	@Test
+	@DisplayName("mdoc mvrc query fails when multiple credentials match, but multiple is not allowed.")
+	void mdocMvrcQueryFailedMultiple() throws JsonProcessingException {
+		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY_SINGLE, DcqlQuery.class);
+		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_LAST_NAME, MDOC_MVRC_HOLDER, MDOC_MVRC_NAME, MDOC_MVRC_FULL));
+
+		assertEquals(0, credentialsResult.size());
 	}
 }

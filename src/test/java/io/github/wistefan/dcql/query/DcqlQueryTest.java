@@ -223,7 +223,6 @@ class DcqlQueryTest extends DcqlTest {
 
 		var query = OBJECT_MAPPER.readValue(SD_JWT_VC_MULTIPLE_EXAMPLE_QUERY, DcqlQuery.class);
 		List<Credential> credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_SD_JWT_VC));
-
 		assertEquals(2, credentialsResult.size());
 	}
 

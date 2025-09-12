@@ -2,6 +2,12 @@ package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.github.wistefan.dcql.helper.CredentialFormatDeserializer;
+import io.github.wistefan.dcql.helper.TrustedAuthorityTypeDeserializer;
+import io.github.wistefan.dcql.model.CredentialFormat;
+import io.github.wistefan.dcql.model.TrustedAuthorityType;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.X509ExtensionUtils;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -26,6 +32,11 @@ public abstract class DcqlTest {
 
 	{
 		OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		OBJECT_MAPPER.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+		SimpleModule deserializerModule = new SimpleModule();
+		deserializerModule.addDeserializer(CredentialFormat.class, new CredentialFormatDeserializer());
+		deserializerModule.addDeserializer(TrustedAuthorityType.class, new TrustedAuthorityTypeDeserializer());
+		OBJECT_MAPPER.registerModule(deserializerModule);
 	}
 
 	public static final KeyPair TEST_KEY = generateTestKeyPair();
