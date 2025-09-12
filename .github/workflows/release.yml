@@ -69,8 +69,7 @@ jobs:
 
       - name: Run tests
         run: |
-          mvn clean test jacoco:report
-      #coveralls:report -Dcoveralls.token=${{ secrets.COVERALLS_TOKEN }}
+          mvn clean test
 
       - name: Build and release it
         env:
