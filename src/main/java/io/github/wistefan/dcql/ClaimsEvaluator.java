@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClaimsEvaluator {
 
+	// key for selective disclosure values inside the VC
 	private static final String SD_KEY = "_sd";
 
 	public static Optional<MDocCredential> evaluateClaimsForMDocCredential(ClaimsQuery claimsQuery, MDocCredential credential) {
@@ -129,8 +130,8 @@ public class ClaimsEvaluator {
 				Object candidate = candidateWrapper.value;
 
 				// If map contains _sd, reveal it and MERGE revealed entries with the original map
-				if (disclosures != null && candidate instanceof Map<?, ?> mapCandidate && mapCandidate.containsKey("_sd")) {
-					Object sdObj = mapCandidate.get("_sd");
+				if (disclosures != null && candidate instanceof Map<?, ?> mapCandidate && mapCandidate.containsKey(SD_KEY)) {
+					Object sdObj = mapCandidate.get(SD_KEY);
 					Map<String, SelectedClaim> revealed = getStringSelectedClaimMap(disclosures, sdObj);
 
 					// Merge: start with revealed, then copy original entries (except "_sd"),
