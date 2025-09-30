@@ -64,7 +64,6 @@
         <!-- lazy dev -->
         <version.org.projectlombok>1.18.30</version.org.projectlombok>
 
-        <version.com.fasterxml.jackson.core>2.20.0</version.com.fasterxml.jackson.core>
         <version.org.slf4j>2.0.17</version.org.slf4j>
 
         <!-- Trust Authorities Handling -->
@@ -88,6 +87,7 @@
 
         <!-- test -->
         <version.org.junit.jupiter>5.13.4</version.org.junit.jupiter>
+        <version.com.fasterxml.jackson.core>2.20.0</version.com.fasterxml.jackson.core>
     </properties>
 
     <dependencies>

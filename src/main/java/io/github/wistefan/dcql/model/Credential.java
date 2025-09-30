@@ -1,5 +1,6 @@
 package io.github.wistefan.dcql.model;
 
+import io.github.wistefan.dcql.model.credential.CredentialBase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Credential {
 
-	private CredentialFormat credentialFormat;
-	private Object rawCredential;
+    private CredentialFormat credentialFormat;
+    private CredentialBase rawCredential;
 }

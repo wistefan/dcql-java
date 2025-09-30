@@ -24,119 +24,119 @@ import static org.junit.jupiter.api.Assertions.*;
 class DcqlQueryTrustedAuthoritiesTest extends DcqlTest {
 
 
-	// --- Test Data ---
+    // --- Test Data ---
 
-	private static final Map<String, Object> ETSI_TL_AUTHORITY = Map.of("type", "etsi_tl", "values", List.of("https://list.com"));
-	private static final Map<String, Object> OPENID_FEDERATION_AUTHORITY = Map.of("type", "openid_federation", "values", List.of("https://federation.com"));
-
-
-	private static final String MDOC_MVRC_QUERY = "{\n" +
-			"  \"credentials\": [\n" +
-			"    {\n" +
-			"      \"id\": \"my_credential\",\n" +
-			"      \"format\": \"mso_mdoc\",\n" +
-			"      \"trusted_authorities\": [\n" +
-			"        {\n" +
-			"          \"type\": \"aki\",\n" +
-			"          \"values\": [\"" + Base64.getUrlEncoder().encodeToString(generateTestAki(TEST_KEY).getKeyIdentifier()) + "\", \"UVVJUkVELiBBIHN0cmluZyB1bmlxdWVseSBpZGVudGlmeWluZyB0aGUgdHlwZSA\"]\n" +
-			"        }\n" +
-			"      ]\n" +
-			"    }\n" +
-			"  ]\n" +
-			"}";
-
-	private static final Credential MDOC_MVRC = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential(new MDocHeaders(null, List.of(generateTestCertificate(TEST_KEY))), Map.of(
-			"credential_format", "mso_mdoc",
-			"doctype", "org.iso.7367.1.mVRC",
-			"namespaces", Map.of(
-					"org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
-					"org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
-			),
-			"cryptographic_holder_binding", true
-	)));
-
-	private static final Credential MDOC_MVRC_ALT_AKI = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential(new MDocHeaders(null, List.of(generateTestCertificate(generateTestKeyPair()))), Map.of(
-			"credential_format", "mso_mdoc",
-			"doctype", "org.iso.7367.1.mVRC",
-			"namespaces", Map.of(
-					"org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
-					"org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
-			),
-			"cryptographic_holder_binding", true
-	)));
-
-	private static final Credential MDOC_MVRC_NO_X5C = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential(new MDocHeaders(null, List.of()), Map.of(
-			"credential_format", "mso_mdoc",
-			"doctype", "org.iso.7367.1.mVRC",
-			"namespaces", Map.of(
-					"org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
-					"org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
-			),
-			"cryptographic_holder_binding", true
-	)));
-
-	private static final String SD_JWT_VC_EXAMPLE_QUERY = "{\n" +
-			"  \"credentials\": [\n" +
-			"    {\n" +
-			"      \"id\": \"my_credential\",\n" +
-			"      \"format\": \"vc+sd-jwt\",\n" +
-			"      \"trusted_authorities\": [\n" +
-			"        {\n" +
-			"          \"type\": \"aki\",\n" +
-			"          \"values\": [\"" + Base64.getUrlEncoder().encodeToString(generateTestAki(TEST_KEY).getKeyIdentifier()) + "\"]\n" +
-			"        }\n" +
-			"      ]\n" +
-			"    }\n" +
-			"  ]\n" +
-			"}";
-
-	private static final Credential SD_JWT_VC = new Credential(CredentialFormat.VC_SD_JWT, new SdJwtCredential(new JwtCredential(Map.of("x5c", List.of(generateTestCertificate(TEST_KEY))), Map.of(
-			"credential_format", "vc+sd-jwt",
-			"vct", "https://credentials.example.com/identity_credential",
-			"claims", Map.of("first_name", "Arthur", "last_name", "Dent"),
-			"cryptographic_holder_binding", true
-	), null), List.of()));
+    private static final Map<String, Object> ETSI_TL_AUTHORITY = Map.of("type", "etsi_tl", "values", List.of("https://list.com"));
+    private static final Map<String, Object> OPENID_FEDERATION_AUTHORITY = Map.of("type", "openid_federation", "values", List.of("https://federation.com"));
 
 
-	@Test
-	@DisplayName("mdocMvrc example with trusted_authorities succeeds")
-	void mdocMvrcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
-		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
+    private static final String MDOC_MVRC_QUERY = "{\n" +
+            "  \"credentials\": [\n" +
+            "    {\n" +
+            "      \"id\": \"my_credential\",\n" +
+            "      \"format\": \"mso_mdoc\",\n" +
+            "      \"trusted_authorities\": [\n" +
+            "        {\n" +
+            "          \"type\": \"aki\",\n" +
+            "          \"values\": [\"" + Base64.getUrlEncoder().encodeToString(generateTestAki(TEST_KEY).getKeyIdentifier()) + "\", \"UVVJUkVELiBBIHN0cmluZyB1bmlxdWVseSBpZGVudGlmeWluZyB0aGUgdHlwZSA\"]\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
 
-		assertTrue(credentialsResult.success());
-		assertEquals(1, credentialsResult.credentials().get("credentials").size());
-	}
+    private static final Credential MDOC_MVRC = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential( null, new MDocHeaders(null, List.of(generateTestCertificate(TEST_KEY))), Map.of(
+            "credential_format", "mso_mdoc",
+            "doctype", "org.iso.7367.1.mVRC",
+            "namespaces", Map.of(
+                    "org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
+                    "org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
+            ),
+            "cryptographic_holder_binding", true
+    )));
 
-	@Test
-	@DisplayName("mdocMvrc example where authority does not match trusted_authorities entry")
-	void mdocMvrcExampleWhereAuthorityDoesNotMatch() throws JsonProcessingException {
+    private static final Credential MDOC_MVRC_ALT_AKI = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential( null, new MDocHeaders(null, List.of(generateTestCertificate(generateTestKeyPair()))), Map.of(
+            "credential_format", "mso_mdoc",
+            "doctype", "org.iso.7367.1.mVRC",
+            "namespaces", Map.of(
+                    "org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
+                    "org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
+            ),
+            "cryptographic_holder_binding", true
+    )));
 
-		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_ALT_AKI));
+    private static final Credential MDOC_MVRC_NO_X5C = new Credential(CredentialFormat.MSO_MDOC, new MDocCredential( null, new MDocHeaders(null, List.of()), Map.of(
+            "credential_format", "mso_mdoc",
+            "doctype", "org.iso.7367.1.mVRC",
+            "namespaces", Map.of(
+                    "org.iso.7367.1", Map.of("vehicle_holder", "Martin Auer", "non_disclosed", "secret"),
+                    "org.iso.18013.5.1", Map.of("first_name", "Martin Auer")
+            ),
+            "cryptographic_holder_binding", true
+    )));
 
-		assertFalse(credentialsResult.success());
-	}
+    private static final String SD_JWT_VC_EXAMPLE_QUERY = "{\n" +
+            "  \"credentials\": [\n" +
+            "    {\n" +
+            "      \"id\": \"my_credential\",\n" +
+            "      \"format\": \"vc+sd-jwt\",\n" +
+            "      \"trusted_authorities\": [\n" +
+            "        {\n" +
+            "          \"type\": \"aki\",\n" +
+            "          \"values\": [\"" + Base64.getUrlEncoder().encodeToString(generateTestAki(TEST_KEY).getKeyIdentifier()) + "\"]\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
 
-	@Test
-	@DisplayName("mdocMvrc example where trusted_authorities is present but no authority")
-	void mdocMvrcExampleWithNoAuthority() throws JsonProcessingException {
+    private static final Credential SD_JWT_VC = new Credential(CredentialFormat.VC_SD_JWT, new SdJwtCredential( null, new JwtCredential( null, Map.of("x5c", List.of(generateTestCertificate(TEST_KEY))), Map.of(
+            "credential_format", "vc+sd-jwt",
+            "vct", "https://credentials.example.com/identity_credential",
+            "claims", Map.of("first_name", "Arthur", "last_name", "Dent"),
+            "cryptographic_holder_binding", true
+    ), null), List.of()));
 
-		var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_NO_X5C));
 
-		assertFalse(credentialsResult.success());
-	}
+    @Test
+    @DisplayName("mdocMvrc example with trusted_authorities succeeds")
+    void mdocMvrcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
+        var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
+        QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
 
-	@Test
-	@DisplayName("sdJwtVc example with trusted_authorities succeeds")
-	void sdJwtVcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
+        assertTrue(credentialsResult.success());
+        assertEquals(1, credentialsResult.credentials().get("credentials").size());
+    }
 
-		var query = OBJECT_MAPPER.readValue(SD_JWT_VC_EXAMPLE_QUERY, DcqlQuery.class);
-		QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC));
+    @Test
+    @DisplayName("mdocMvrc example where authority does not match trusted_authorities entry")
+    void mdocMvrcExampleWhereAuthorityDoesNotMatch() throws JsonProcessingException {
 
-		assertTrue(credentialsResult.success());
-		assertEquals(1, credentialsResult.credentials().get("credentials").size());
-	}
+        var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
+        QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_ALT_AKI));
+
+        assertFalse(credentialsResult.success());
+    }
+
+    @Test
+    @DisplayName("mdocMvrc example where trusted_authorities is present but no authority")
+    void mdocMvrcExampleWithNoAuthority() throws JsonProcessingException {
+
+        var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
+        QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC_NO_X5C));
+
+        assertFalse(credentialsResult.success());
+    }
+
+    @Test
+    @DisplayName("sdJwtVc example with trusted_authorities succeeds")
+    void sdJwtVcExampleWithTrustedAuthoritiesSucceeds() throws JsonProcessingException {
+
+        var query = OBJECT_MAPPER.readValue(SD_JWT_VC_EXAMPLE_QUERY, DcqlQuery.class);
+        QueryResult credentialsResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(SD_JWT_VC));
+
+        assertTrue(credentialsResult.success());
+        assertEquals(1, credentialsResult.credentials().get("credentials").size());
+    }
 
 }

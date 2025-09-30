@@ -107,7 +107,7 @@ public class DCQLEvaluator {
         } else {
             sdJwtCredentials = sdJwtCredentials.stream()
                     // keep the original credential untouched
-                    .map(sdJwtCredential -> new SdJwtCredential(sdJwtCredential.getJwtCredential(), List.of()))
+                    .map(sdJwtCredential -> new SdJwtCredential(sdJwtCredential.getRaw(), sdJwtCredential.getJwtCredential(), List.of()))
                     .toList();
         }
         return CredentialMapper.toCredentials(credentialQuery.getFormat(), sdJwtCredentials);
@@ -192,7 +192,7 @@ public class DCQLEvaluator {
                                     .orElse(new ArrayList<>())));
                 }
                 if (!disclosures.isEmpty()) {
-                    disclosedCredentials.add(new SdJwtCredential(credential.getJwtCredential(), new ArrayList<>(disclosures)));
+                    disclosedCredentials.add(new SdJwtCredential(credential.getRaw(), credential.getJwtCredential(), new ArrayList<>(disclosures)));
                 }
             }
 
@@ -234,7 +234,7 @@ public class DCQLEvaluator {
                     .map(SdJwtCredential::getDisclosures)
                     .flatMap(List::stream)
                     .collect(Collectors.toSet());
-            disclosedCredentials.add(new SdJwtCredential(credential.getJwtCredential(), new ArrayList<>(selectedDisclosures)));
+            disclosedCredentials.add(new SdJwtCredential(credential.getRaw(), credential.getJwtCredential(), new ArrayList<>(selectedDisclosures)));
         }
         return disclosedCredentials;
     }
@@ -309,9 +309,12 @@ public class DCQLEvaluator {
     }
 
     private static List<JwtCredential> filterJwtByMetadata(Map<String, Object> metaData, List<JwtCredential> credentialsList) {
-        JwtMetaData jwtMetaData = JwtMetaData.fromMeta(metaData);
+        W3CMetaData w3CMetaData = W3CMetaData.fromMeta(metaData);
         return credentialsList.stream()
-                .filter(jwtCredential -> jwtMetaData.getVctValues().contains(jwtCredential.getVct()))
+                .filter(jwtCredential ->
+                        w3CMetaData.getTypeValues()
+                                .stream()
+                                .anyMatch(metaTypes -> new HashSet<>(jwtCredential.getType()).containsAll(metaTypes)))
                 .toList();
     }
 
@@ -322,23 +325,23 @@ public class DCQLEvaluator {
                 .toList();
     }
 
-    private static boolean containsClaims(CredentialQuery credentialQuery) {
+    public static boolean containsClaims(CredentialQuery credentialQuery) {
         return credentialQuery.getClaims() != null && !credentialQuery.getClaims().isEmpty();
     }
 
-    private static boolean containsClaimSets(CredentialQuery credentialQuery) {
+    public static boolean containsClaimSets(CredentialQuery credentialQuery) {
         return credentialQuery.getClaimSets() != null && !credentialQuery.getClaimSets().isEmpty();
     }
 
-    private static boolean containsMeta(CredentialQuery credentialQuery) {
+    public static boolean containsMeta(CredentialQuery credentialQuery) {
         return credentialQuery.getMeta() != null && !credentialQuery.getMeta().isEmpty();
     }
 
-    private static boolean containsTrustAuthorities(CredentialQuery credentialQuery) {
+    public static boolean containsTrustAuthorities(CredentialQuery credentialQuery) {
         return credentialQuery.getTrustedAuthorities() != null && !credentialQuery.getTrustedAuthorities().isEmpty();
     }
 
-    private static boolean containsCredentialSets(DcqlQuery dcqlQuery) {
+    public static boolean containsCredentialSets(DcqlQuery dcqlQuery) {
         return dcqlQuery.getCredentialSets() != null && !dcqlQuery.getCredentialSets().isEmpty();
     }
 
