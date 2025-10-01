@@ -40,6 +40,7 @@ jobs:
 
     needs: [ "generate-version" ]
     runs-on: ubuntu-latest
+    environment: SONATYPE_ORG_USERNAME
 
     steps:
 
