@@ -241,6 +241,8 @@
                             <publishingServerId>sonatype.org</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
+                            <generateSources>false</generateSources>
+                            <generateJavadoc>false</generateJavadoc>
                         </configuration>
                     </plugin>
                     <plugin>
