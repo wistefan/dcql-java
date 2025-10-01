@@ -218,7 +218,6 @@
                 <version>${version.org.apache.maven.plugins.maven-source-plugin}</version>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -233,7 +232,6 @@
                 <version>${version.org.apache.maven.plugins.maven-javadoc-plugin}</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
