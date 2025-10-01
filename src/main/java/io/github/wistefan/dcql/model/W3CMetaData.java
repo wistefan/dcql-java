@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Holder of metadata-queries for the W3C credential formats(ldp, jwt, sd-jwt)
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +19,9 @@ public class W3CMetaData {
 
 	private List<List<String>> typeValues;
 
+	/**
+	 * Extract the supported metadata(e.g. type_values) information for W3C credentials.
+	 */
 	public static W3CMetaData fromMeta(Map<String, Object> metaData) {
 		if (metaData.containsKey(TYPE_VALUES_KEY) && metaData.get(TYPE_VALUES_KEY) instanceof List typeValues) {
 

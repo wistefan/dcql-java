@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Pojo containing the structur of a claims-query {@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6.3}
+ */
 @Data
 @NoArgsConstructor
 public class ClaimsQuery {

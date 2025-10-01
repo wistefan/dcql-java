@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+/**
+ * Type of trusted authorities to be used in queries{@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6.1.1}
+ */
 public enum TrustedAuthorityType {
 
 	AKI("aki"),

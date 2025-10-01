@@ -2,7 +2,6 @@
 package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.wistefan.dcql.DCQLEvaluator;
 import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
@@ -158,7 +157,7 @@ class DcqlQueryTest extends DcqlTest {
     @DisplayName("mdoc mvrc query fails with invalid mdoc")
     void mdocMvrcQueryFailsWithInvalidMdoc() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC));
 
         assertFalse(queryResult.success());
     }
@@ -167,7 +166,7 @@ class DcqlQueryTest extends DcqlTest {
     @DisplayName("mdoc mvrc example with multiple credentials succeeds")
     void mdocMvrcExampleWithMultipleCredentialsSucceeds() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC, MDOC_MVRC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC, MDOC_MVRC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -178,7 +177,7 @@ class DcqlQueryTest extends DcqlTest {
     @DisplayName("w3cLdpVc example succeeds")
     void w3cLdpVcExampleSucceeds() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(W3C_LDP_VC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_W3C_LDP_VC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_W3C_LDP_VC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -189,7 +188,7 @@ class DcqlQueryTest extends DcqlTest {
     @DisplayName("w3cLdpVc query fails with invalid type values")
     void w3cLdpVcQueryFailsWithInvalidTypeValues() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(W3C_LDP_VC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
 
         assertFalse(queryResult.success());
     }
@@ -198,7 +197,7 @@ class DcqlQueryTest extends DcqlTest {
     @DisplayName("mdocMvrc example using namespaces succeeds")
     void mdocMvrcExampleUsingNamespacesSucceeds() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(MDOC_NAMESPACE_MVRC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MVRC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -209,7 +208,7 @@ class DcqlQueryTest extends DcqlTest {
     void sdJwtVcExampleWithMultipleCredentialsSucceeds() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(SD_JWT_VC_EXAMPLE_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC, EXAMPLE_SD_JWT_VC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_MDOC, EXAMPLE_SD_JWT_VC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -227,7 +226,7 @@ class DcqlQueryTest extends DcqlTest {
     void sdJwtVcWithMultipleSetToTrueSucceeds() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(SD_JWT_VC_MULTIPLE_EXAMPLE_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_SD_JWT_VC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_SD_JWT_VC));
         assertTrue(queryResult.success());
         assertEquals(2, queryResult.credentials().get("credentials").size());
     }
@@ -237,7 +236,7 @@ class DcqlQueryTest extends DcqlTest {
     void sdJwtVcWithMultipleButOneMatch() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(SD_JWT_VC_MULTIPLE_EXAMPLE_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_MDOC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_MDOC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -255,7 +254,7 @@ class DcqlQueryTest extends DcqlTest {
     void sdJwtVcWithNoClaims() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(SD_JWT_VC_NO_CLAIMS_EXAMPLE_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_MDOC));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(EXAMPLE_SD_JWT_VC, EXAMPLE_MDOC));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());

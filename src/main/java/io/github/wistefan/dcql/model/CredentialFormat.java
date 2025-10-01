@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+/**
+ * Format of a concrete Verifiable Credential
+ */
 public enum CredentialFormat {
 
 	MSO_MDOC("mso_mdoc"),

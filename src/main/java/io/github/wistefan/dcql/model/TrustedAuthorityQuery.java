@@ -11,6 +11,7 @@ import java.util.List;
  * An object representing information that helps to identify an authority or the trust framework that certifies Issuers.
  * A Credential is identified as a match to a Trusted Authorities Query if it matches with one of the provided values in
  * one of the provided types.
+ * {@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6.1.1}
  */
 @AllArgsConstructor
 @NoArgsConstructor

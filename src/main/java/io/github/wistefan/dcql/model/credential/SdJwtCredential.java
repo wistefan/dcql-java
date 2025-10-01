@@ -2,16 +2,24 @@ package io.github.wistefan.dcql.model.credential;
 
 import lombok.Getter;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.StringJoiner;
 
+/**
+ * Holder of SdJwtCredential, providing access to its deserialized contents.
+ */
 @Getter
 public class SdJwtCredential extends CredentialBase {
 
-    private static final String SD_JWT_SEPERATOR = "~";
+    private static final String SD_JWT_SEPARATOR = "~";
 
+    /**
+     * The "standard"-jwt contents of the credential
+     */
     private JwtCredential jwtCredential;
+    /**
+     * The disclosures to provide access to the contents
+     */
     private List<Disclosure> disclosures;
 
     public SdJwtCredential(String raw, JwtCredential jwtCredential, List<Disclosure> disclosures) {
@@ -29,15 +37,15 @@ public class SdJwtCredential extends CredentialBase {
         if (raw == null) {
             return null;
         }
-        String[] splittedRaw = super.getRaw().split(SD_JWT_SEPERATOR);
-        StringJoiner sdJoiner = new StringJoiner(SD_JWT_SEPERATOR);
+        String[] splittedRaw = super.getRaw().split(SD_JWT_SEPARATOR);
+        StringJoiner sdJoiner = new StringJoiner(SD_JWT_SEPARATOR);
         // first element is the plain jwt.
         sdJoiner.add(splittedRaw[0]);
         disclosures.stream()
                 .map(Disclosure::getEncodedDisclosure)
                 .forEach(sdJoiner::add);
         // the sd needs to end with an ~
-        return sdJoiner + SD_JWT_SEPERATOR;
+        return sdJoiner + SD_JWT_SEPARATOR;
     }
 
     public String getVct() {

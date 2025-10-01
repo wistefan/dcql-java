@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * A Credential Query is an object representing a request for a presentation of one or more matching Credentials.
+ * {@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6.1}
  */
 @Data
 public class CredentialQuery {

@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * A Credential Set Query is an object representing a request for one or more Credentials to satisfy a particular use
  * case with the Verifier.
+ * {@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6.2}
  */
 @Data
 public class CredentialSetQuery {

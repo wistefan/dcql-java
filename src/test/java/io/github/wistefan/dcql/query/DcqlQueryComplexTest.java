@@ -2,7 +2,6 @@
 package io.github.wistefan.dcql.query;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.wistefan.dcql.DCQLEvaluator;
 import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
@@ -129,7 +128,7 @@ class DcqlQueryComplexTest extends DcqlTest {
     void failsWithNoCredentials() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of());
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of());
 
         assertFalse(queryResult.success());
     }
@@ -139,7 +138,7 @@ class DcqlQueryComplexTest extends DcqlTest {
     void failsWithCredentialsThatDoNotSatisfyARequiredClaimSet() throws JsonProcessingException {
 
         var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MDL_ADDRESS, MDOC_PHOTO_CARD_ADDRESS));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(MDOC_MDL_ADDRESS, MDOC_PHOTO_CARD_ADDRESS));
 
         assertFalse(queryResult.success());
     }
@@ -151,7 +150,7 @@ class DcqlQueryComplexTest extends DcqlTest {
         List<Credential> expectedPoaCredentials = List.of(MDOC_MDL_ADDRESS);
 
         var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(
                 MDOC_MDL_ID,
                 MDOC_MDL_ADDRESS,
                 MDOC_PHOTO_CARD_ID,
@@ -182,7 +181,7 @@ class DcqlQueryComplexTest extends DcqlTest {
         List<Credential> expectedPoaCredentials = List.of(MDOC_MDL_ADDRESS);
 
         var query = OBJECT_MAPPER.readValue(COMPLEX_MDOC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(
                 MDOC_MDL_ADDRESS,
                 MDOC_PHOTO_CARD_ID,
                 MDOC_PHOTO_CARD_ADDRESS,

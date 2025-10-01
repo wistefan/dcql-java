@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * A JSON-encoded query that allows the Verifier to request presentations that match the query.
+ * {@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-digital-credentials-query-l}
  */
 @Data
 public class DcqlQuery {

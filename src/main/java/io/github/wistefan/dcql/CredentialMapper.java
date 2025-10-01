@@ -7,8 +7,18 @@ import io.github.wistefan.dcql.model.credential.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper class to map raw {@link Credential}s into concrete Credential-Classes.
+ */
 public class CredentialMapper {
 
+    /**
+     * Convert the list of raw credentials into typed credentials.
+     *
+     * @param credentialFormat format of the credentials in the list
+     * @param rawCredentials   raw credentials to be mapped
+     * @return the list of typed credentials
+     */
     public static List<Credential> toCredentials(CredentialFormat credentialFormat, List<?> rawCredentials) {
         return rawCredentials.stream()
                 .filter(CredentialBase.class::isInstance)
@@ -17,6 +27,9 @@ public class CredentialMapper {
                 .toList();
     }
 
+    /**
+     * Return the {@link LdpCredential}s from the given list. Fails if the list is multi-credential.
+     */
     public static List<LdpCredential> toLdpCredentials(List<Credential> credentialsList) {
         List<LdpCredential> ldpCredentialsList = new ArrayList<>();
         for (Credential c : credentialsList) {
@@ -29,6 +42,9 @@ public class CredentialMapper {
         return ldpCredentialsList;
     }
 
+    /**
+     * Return the {@link MDocCredential}s from the given list. Fails if the list is multi-credential.
+     */
     public static List<MDocCredential> toMDocCredentials(List<Credential> credentialsList) {
         List<MDocCredential> mDocCredentialsList = new ArrayList<>();
         for (Credential c : credentialsList) {
@@ -41,6 +57,9 @@ public class CredentialMapper {
         return mDocCredentialsList;
     }
 
+    /**
+     * Return the {@link JwtCredential}s from the given list. Fails if the list is multi-credential.
+     */
     public static List<JwtCredential> toJWTCredentials(List<Credential> credentialsList) {
         List<JwtCredential> jwtCredentialsList = new ArrayList<>();
         for (Credential c : credentialsList) {
@@ -53,6 +72,9 @@ public class CredentialMapper {
         return jwtCredentialsList;
     }
 
+    /**
+     * Return the {@link SdJwtCredential}s from the given list. Fails if the list is multi-credential.
+     */
     public static List<SdJwtCredential> toSdJWTCredentials(List<Credential> credentialsList) {
         List<SdJwtCredential> sdJwtCredentialsList = new ArrayList<>();
         for (Credential c : credentialsList) {

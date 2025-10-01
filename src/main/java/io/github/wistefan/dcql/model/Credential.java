@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * General holder of all credentials together with their format
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

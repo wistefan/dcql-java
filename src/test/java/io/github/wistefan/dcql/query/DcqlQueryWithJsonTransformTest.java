@@ -3,7 +3,6 @@ package io.github.wistefan.dcql.query;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.wistefan.dcql.DCQLEvaluator;
 import io.github.wistefan.dcql.QueryResult;
 import io.github.wistefan.dcql.model.Credential;
 import io.github.wistefan.dcql.model.CredentialFormat;
@@ -12,7 +11,6 @@ import io.github.wistefan.dcql.model.credential.JwtCredential;
 import io.github.wistefan.dcql.model.credential.MDocCredential;
 import io.github.wistefan.dcql.model.credential.SdJwtCredential;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -111,7 +109,7 @@ class DcqlQueryWithJsonTransformTest extends DcqlTest {
     @DisplayName("mdocMvrc example succeeds")
     void mdocMvrcExampleSucceeds() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(MDOC_MVRC_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_WITH_JT));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(MDOC_WITH_JT));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());
@@ -121,7 +119,7 @@ class DcqlQueryWithJsonTransformTest extends DcqlTest {
     @DisplayName("sdJwtVc example with multiple credentials succeeds")
     void sdJwtVcExampleWithMultipleCredentialsSucceeds() throws JsonProcessingException {
         var query = OBJECT_MAPPER.readValue(SD_JWT_VC_EXAMPLE_QUERY, DcqlQuery.class);
-        QueryResult queryResult = DCQLEvaluator.evaluateDCQLQuery(query, List.of(MDOC_WITH_JT, SD_JWT_VC_WITH_JT));
+        QueryResult queryResult = dcqlEvaluator.evaluateDCQLQuery(query, List.of(MDOC_WITH_JT, SD_JWT_VC_WITH_JT));
 
         assertTrue(queryResult.success());
         assertEquals(1, queryResult.credentials().get("credentials").size());

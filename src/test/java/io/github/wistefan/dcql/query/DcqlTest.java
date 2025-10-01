@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.github.wistefan.dcql.*;
 import io.github.wistefan.dcql.helper.CredentialFormatDeserializer;
 import io.github.wistefan.dcql.helper.TrustedAuthorityTypeDeserializer;
 import io.github.wistefan.dcql.model.CredentialFormat;
@@ -19,6 +20,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
@@ -45,6 +47,17 @@ public abstract class DcqlTest {
 
     public static final KeyPair TEST_KEY = generateTestKeyPair();
 
+    protected DCQLEvaluator dcqlEvaluator;
+
+    @BeforeEach
+    public void setUp() {
+        dcqlEvaluator = new DCQLEvaluator(List.of(
+                new JwtCredentialEvaluator(),
+                new DcSdJwtCredentialEvaluator(),
+                new VcSdJwtCredentialEvaluator(),
+                new MDocCredentialEvaluator(),
+                new LdpCredentialEvaluator()));
+    }
 
     public static KeyPair generateTestKeyPair() {
         try {

@@ -88,6 +88,7 @@
         <!-- test -->
         <version.org.junit.jupiter>5.13.4</version.org.junit.jupiter>
         <version.com.fasterxml.jackson.core>2.20.0</version.com.fasterxml.jackson.core>
+        <version.com.nimbusds.nimbus-jose-jwt>10.5</version.com.nimbusds.nimbus-jose-jwt>
     </properties>
 
     <dependencies>
@@ -146,6 +147,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${version.org.junit.jupiter}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${version.com.nimbusds.nimbus-jose-jwt}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

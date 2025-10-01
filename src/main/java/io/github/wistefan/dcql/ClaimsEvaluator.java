@@ -8,12 +8,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Evaluator for ClaimsQueries{@see https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-claims-query}
+ */
 @Slf4j
 public class ClaimsEvaluator {
 
     // key for selective disclosure values inside the VC
     private static final String SD_KEY = "_sd";
 
+    /**
+     * Evaluate claims query for MDoc-Credentials.
+     */
     public static Optional<MDocCredential> evaluateClaimsForMDocCredential(ClaimsQuery claimsQuery, MDocCredential credential) {
         List<SelectedClaim> selectedClaims = new ArrayList<>();
         try {
@@ -34,6 +40,10 @@ public class ClaimsEvaluator {
         return Optional.empty();
     }
 
+    /**
+     * Evaluate claims query for SD-JWT-Credentials. The evaluator will check the disclosure and only include the requested
+     * disclosures in the resulting credential.
+     */
     public static Optional<SdJwtCredential> evaluateClaimsForSdJwtCredential(ClaimsQuery claimsQuery, SdJwtCredential credential) {
         List<SelectedClaim> selectedClaims = new ArrayList<>();
         try {
@@ -63,6 +73,9 @@ public class ClaimsEvaluator {
         return new SdJwtCredential(credential.getRaw(), credential.getJwtCredential(), cleanedDisclosures);
     }
 
+    /**
+     * Evaluate the claims query for JWT Credentials
+     */
     public static Optional<JwtCredential> evaluateClaimsForJwtCredential(ClaimsQuery claimsQuery, JwtCredential credential) {
         List<SelectedClaim> selectedClaims = new ArrayList<>();
         try {
@@ -82,6 +95,9 @@ public class ClaimsEvaluator {
         return Optional.empty();
     }
 
+    /**
+     * Evaluate the claims query for LDP Credentials
+     */
     public static Optional<LdpCredential> evaluateClaimsForLdpCredential(ClaimsQuery claimsQuery, LdpCredential credential) {
         List<SelectedClaim> selectedClaims = new ArrayList<>();
         try {
@@ -102,20 +118,19 @@ public class ClaimsEvaluator {
     }
 
 
-    public static List<SelectedClaim> selectClaimsByPath(Map<String, Object> credential, List<Object> claimPath) {
+    private static List<SelectedClaim> selectClaimsByPath(Map<String, Object> credential, List<Object> claimPath) {
         return processPath(credential, claimPath, null);
     }
 
-    public static List<SelectedClaim> selectClaimsByPathDisclosures(Map<String, Object> credential, List<Object> claimPath,
-                                                                    List<Disclosure> disclosures) {
+    private static List<SelectedClaim> selectClaimsByPathDisclosures(Map<String, Object> credential, List<Object> claimPath,
+                                                                     List<Disclosure> disclosures) {
         return processPath(credential, claimPath, disclosures);
     }
 
     private static List<SelectedClaim> processPath(
             Map<String, Object> credential,
             List<Object> claimPath,
-            List<Disclosure> disclosures
-    ) {
+            List<Disclosure> disclosures) {
         if (credential == null || claimPath == null || claimPath.isEmpty()) {
             throw new IllegalArgumentException("Credential and claimPath must not be null or empty");
         }
@@ -134,11 +149,7 @@ public class ClaimsEvaluator {
                 if (disclosures != null && candidate instanceof Map<?, ?> mapCandidate && mapCandidate.containsKey(SD_KEY)) {
                     Object sdObj = mapCandidate.get(SD_KEY);
                     Map<String, SelectedClaim> revealed = null;
-                    try {
-                        revealed = getStringSelectedClaimMap(disclosures, sdObj);
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new EvaluationException("Was not able to reveal selective disclosure.", e);
-                    }
+                    revealed = getStringSelectedClaimMap(disclosures, sdObj);
 
                     // Merge: start with revealed, then copy original entries (except "_sd"),
                     // so explicit values in the original map overwrite revealed ones if keys collide.
@@ -192,19 +203,16 @@ public class ClaimsEvaluator {
                     throw new IllegalArgumentException("Invalid claim path component: " + component);
                 }
             }
-
             if (nextSelection.isEmpty()) {
                 throw new IllegalArgumentException("No elements selected at path component: " + component);
             }
-
             current = nextSelection;
         }
-
         return current;
     }
 
 
-    private static Map<String, SelectedClaim> getStringSelectedClaimMap(List<Disclosure> disclosures, Object sdObj) throws NoSuchAlgorithmException {
+    private static Map<String, SelectedClaim> getStringSelectedClaimMap(List<Disclosure> disclosures, Object sdObj) {
         if (!(sdObj instanceof List<?> sdList)) {
             throw new IllegalArgumentException("_sd field must be a list");
         }
@@ -222,6 +230,7 @@ public class ClaimsEvaluator {
         return revealed;
     }
 
+    // helper record for selective disclosure claims to be used for the evaluation of SD-Credentials.
     private record SelectedClaim(Object value, String hash) {
     }
 

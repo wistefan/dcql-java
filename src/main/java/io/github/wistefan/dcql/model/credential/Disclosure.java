@@ -8,6 +8,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+/**
+ * Disclosure object to provide values for an SD-JWT.
+ */
 @Data
 @EqualsAndHashCode
 public class Disclosure {
@@ -16,6 +19,7 @@ public class Disclosure {
     private Object value;
     // the plain, encoded disclosure as it was provided in the original credential
     private final String encodedDisclosure;
+    // the sd_hash of the disclosure, correlating with an _sd entry of the credential
     private final String sdHash;
 
     public Disclosure(String salt, String claim, Object value, String encodedDisclosure, String sdAlgorithm) {
@@ -26,6 +30,9 @@ public class Disclosure {
         this.sdHash = generateSdHash(sdAlgorithm);
     }
 
+    /**
+     * Generate the hash of the disclosure, based on the algorithm(configured in the credential)
+     */
     private String generateSdHash(String sdAlgorithm) {
         byte[] disclosureBytes = encodedDisclosure.getBytes(StandardCharsets.UTF_8);
         MessageDigest digest = getMessageDigest(sdAlgorithm);

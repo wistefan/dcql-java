@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.Map;
 
+/**
+ * Holder of MDocCredentials, providing access to its deserialized contents.
+ */
 @Getter
 public class MDocCredential extends CredentialBase {
 
@@ -18,6 +21,9 @@ public class MDocCredential extends CredentialBase {
         this.payload = payload;
     }
 
+    /**
+     * Returns contents of the "docType" field from the credential
+     */
     public String getDocType() {
         if (payload.containsKey(DOC_TYPE_KEY) && payload.get(DOC_TYPE_KEY) instanceof String docType) {
             return docType;
