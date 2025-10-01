@@ -232,10 +232,10 @@
                             <publishingServerId>sonatype.org</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
-                            <generateSources>false</generateSources>
-                            <generateJavadoc>false</generateJavadoc>
-                            <attachSources>false</attachSources>
-                            <attachJavadoc>false</attachJavadoc>
+                            <generateSources>true</generateSources>
+                            <generateJavadoc>true</generateJavadoc>
+                            <attachSources>true</attachSources>
+                            <attachJavadoc>true</attachJavadoc>
                         </configuration>
                     </plugin>
 
