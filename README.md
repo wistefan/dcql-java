@@ -1,10 +1,20 @@
 # DCQL-Java
 
+[![License badge](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.wistefan/dcql-java.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.wistefan/dcql-java)
+
 A Java implementation of the [Digital Credentials Query Language(DCQL)](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-digital-credentials-query-l).
 
 ## Maven
 
-The library is avaliable at maven central:
+The library is available at maven central:
+
+```xml
+    <dependency>
+        <groupId>io.github.wistefan</groupId>
+        <artifactId>dcql-java</artifactId>
+    </dependency>
+```
 
 ## Example usage
 
