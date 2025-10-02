@@ -78,7 +78,7 @@ jobs:
           SONATYPE_ORG_PASSWORD: ${{ secrets.SONATYPE_ORG_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_SECRET_KEY_PASSWORD }}
         run: |
-          mvn install deploy -Prelease -Dgpg.keyname=563C5DE0C079D6AD
+          mvn deploy -Prelease -Dgpg.keyname=563C5DE0C079D6AD
 
 
   git-release:
