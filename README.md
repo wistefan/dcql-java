@@ -21,7 +21,7 @@ The library is available at maven central:
 In order to evaluate DCQL-Queries, a list of [VerifiableCredentials](https://en.wikipedia.org/wiki/Verifiable_credentials) has to be provided.
 The library itself uses a minimum of dependencies, therefor parsing of credentials and queries needs to be done by the caller.
 A possible option is [Jackson](https://github.com/FasterXML/jackson). In order to properly deserialize a query, the [ObjectMapper](https://www.baeldung.com/jackson-object-mapper-tutorial)
-needs to be configured as following:
+needs to be configured as following: 
 
 ```java
     ObjectMapper objectMapper = new ObjectMapper();
